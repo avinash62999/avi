@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JPG to PDF Converter</title>
+</head>
+<body>
+  <h2>Upload JPG images to convert to PDF</h2>
+  <input type="file" id="imageUpload" multiple accept="image/jpeg,image/jpg" />
+  <button onclick="generatePDF()">Convert to PDF</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+      const files = document.getElementById('imageUpload').files;
+
+      for(let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const imgData = await fileToBase64(file);
+
+        if(i > 0) {
+          pdf.addPage();
+        }
+
+        pdf.addImage(imgData, 'JPEG', 10, 10, 180, 160);
+      }
+
+      pdf.save('converted.pdf');
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+</body>
+</html>
